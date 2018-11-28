@@ -10,18 +10,11 @@
 
   <!-- URDF robot description -->
   <param name="robot_description"
-         command="cat $(find dynamixel_control_hw)/urdf/sample.urdf" />
-  <!-- Publish robot's state in the tf tree -->
-  <node pkg="robot_state_publisher" type="robot_state_publisher"
-        name="rob_state_pub" />
-
-  <!-- To move the dummy robot with a gui, bypassing the controller manager -->
-  <node if="$(arg fake_robot)" pkg="joint_state_publisher"
-        type="joint_state_publisher" name="dummy_robot" />
+         command="$(find xacro)/xacro.py $(find im_description)/robots/wrist.xacro" />
 
   <!-- launch our hardware interface -->
   <group unless="$(arg fake_robot)">
-    <arg name="protocol_version" default="p1"
+    <arg name="protocol_version" default="p2"
          doc="Choses the dynamixel protocol variant to be used (p1 or p2)"/>
     <node pkg="dynamixel_control_hw"
           type="dynamixel_control_$(arg protocol_version)"
@@ -32,7 +25,6 @@
     <node name="controller" pkg="controller_manager" type="spawner"
           respawn="false" output="screen" clear_params="true"
           args="/dynamixel_controllers/joint_state_controller
-                /dynamixel_controllers/traj_controller
-                /dynamixel_controllers/vel_controller" />
+                /dynamixel_controllers/traj_controller" />
   </group>
 </launch>
